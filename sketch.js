@@ -54,8 +54,7 @@ function draw() {
     // 2. 處理取樣邏輯並繪製到 pg 上
     video.loadPixels();
     pg.clear(); // 保持 pg 背景透明
-    pg.textSize(8);
-    pg.textAlign(CENTER, CENTER);
+    pg.noStroke(); // 方塊不描邊，看起來比較整齊
 
     let step = 20; // 20x20 為一個單位
     for (let row = 0; row < video.height; row += step) {
@@ -69,10 +68,9 @@ function draw() {
         let b = video.pixels[index + 2];
         let avg = Math.floor((r + g + b) / 3);
 
-        // 設定文字顏色隨亮度變化（0為黑，255為白）
+        // 設定方塊顏色隨亮度變化（灰階）
         pg.fill(avg);
-        // 在 pg 的原始解析度座標上繪製文字
-        pg.text(avg, col + step / 2, row + step / 2);
+        pg.rect(col, row, step, step);
       }
     }
 
