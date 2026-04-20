@@ -58,14 +58,34 @@ function draw() {
     image(video, 0, 0, videoW, videoH); 
     pop();
 
-    // 在 pg 上繪製一些內容，以便看到它疊加在視訊上方
-    // 每次 draw 循環都會重新繪製 pg 的內容
-    pg.clear(); // 清除 pg 之前的繪圖
-    pg.fill(255, 0, 0, 100); // 半透明紅色
+    // 載入視訊像素資料
+    video.loadPixels();
+    pg.clear(); // 清除上一幀的文字
+    
+    // 設定文字樣式
     pg.noStroke();
-    pg.rect(pg.width * 0.1, pg.height * 0.1, pg.width * 0.8, pg.height * 0.8);
-    pg.fill(0, 255, 0, 150); // 半透明綠色
-    pg.ellipse(pg.width / 2, pg.height / 2, pg.width * 0.3, pg.height * 0.3);
+    pg.fill(255); // 白色文字
+    pg.textSize(8);
+    pg.textAlign(CENTER, CENTER);
+
+    // 以 20x20 為單位進行取樣
+    let step = 20;
+    for (let y = 0; y < video.height; y += step) {
+      for (let x = 0; x < video.width; x += step) {
+        // 因為視訊在畫面上是鏡像顯示的 (scale -1)，
+        // 為了讓文字對應到正確的位置，我們取像素時也要取鏡像位置的值
+        let mirroredX = (video.width - 1) - x;
+        let index = (mirroredX + y * video.width) * 4;
+        
+        let r = video.pixels[index];
+        let g = video.pixels[index + 1];
+        let b = video.pixels[index + 2];
+        let avg = Math.floor((r + g + b) / 3);
+
+        // 在該單位的中心顯示數值
+        pg.text(avg, x + step / 2, y + step / 2);
+      }
+    }
 
     // 繪製 pg 到主畫布上，與視訊畫面相同的位置和縮放大小
     image(pg, x, y, videoW, videoH);
