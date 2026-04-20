@@ -54,13 +54,12 @@ function draw() {
     // 2. 處理取樣邏輯並繪製到 pg 上
     video.loadPixels();
     pg.clear(); // 保持 pg 背景透明
-    pg.fill(0); // 黑色文字
     pg.textSize(8);
     pg.textAlign(CENTER, CENTER);
 
     let step = 20; // 20x20 為一個單位
     for (let row = 0; row < video.height; row += step) {
-      for (let col = 0; row < video.height && col < video.width; col += step) {
+      for (let col = 0; col < video.width; col += step) {
         // 因為畫面在主畫布是鏡像的，取樣時要取對應鏡像位置的像素
         let mirroredCol = (video.width - 1) - col;
         let index = (mirroredCol + row * video.width) * 4;
@@ -70,6 +69,8 @@ function draw() {
         let b = video.pixels[index + 2];
         let avg = Math.floor((r + g + b) / 3);
 
+        // 設定文字顏色隨亮度變化（0為黑，255為白）
+        pg.fill(avg);
         // 在 pg 的原始解析度座標上繪製文字
         pg.text(avg, col + step / 2, row + step / 2);
       }
